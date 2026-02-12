@@ -17,7 +17,7 @@ The total number of length of the keys in the dictionaries is how many sequences
 - add longest length + 20 pixels (thats the width of the canvas)
 
 
-go through the file again
+go through the dictionary
 ## Draw the lines and exons for each 
 - grab the header
 - add a line at pixel 0+50 with the start line at 10 and the end at the length of that sequence

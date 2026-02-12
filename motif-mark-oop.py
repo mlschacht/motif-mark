@@ -4,8 +4,11 @@ import argparse
 import cairo
 import re
 
+#update with argparse when ready
 motifs_file:str = 'Fig_1_motifs.txt'
 fasta_file:str = 'Figure_1.fasta'
+prefix:str = fasta_file.split(".")[0] #save the prefix of the input fasta file to use as the output png file name
+
 
 #initialize variables
 motif_list:list = []
@@ -38,14 +41,11 @@ with open(fasta_file, "r") as f_file: #grab important info about each sequence a
             header = line #store the header for this gene
             sequence = "" #reset sequence for this gene
             num_genes += 1
-            print(num_genes)
             continue
         
         if line.startswith(">") == True and num_genes == 0: #at the first header line
             header = line #store the header for this gene
             num_genes += 1
-            print(num_genes)
-            print("start")
             continue
 
         else:
@@ -58,9 +58,17 @@ with open(fasta_file, "r") as f_file: #grab important info about each sequence a
     #this gene is complete, update the dictionary
     gene_dict[header] = (sequence)
 
-for value in gene_dict.values():
-     print(value)
 
+# draw the image canvas based on the number of genes and the longest gene length
+height:int = num_genes *100
+width:int = longest_gene + 20
+image_file_name:str = prefix + ".png"
+surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
+
+
+#go through the dictionary
+
+surface.write_to_png(image_file_name)
 
 class Motif:
     def __init__(self, the_name, the_sex, the_language):
