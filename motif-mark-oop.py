@@ -12,7 +12,7 @@ prefix:str = fasta_file.split(".")[0] #save the prefix of the input fasta file t
 
 
 #initialize variables
-motif_list:list = []
+motif_dict:dict = {} #keys are regex motifs and values are the original sequence lengths
 longest_gene:int = 0
 num_genes:int = 0
 
@@ -23,6 +23,22 @@ sequence:str = ""
 seq_length:int = 0
 
 is_DNA_file = bioinfo.validate_base_file(fasta_file) #True if fasta is a DNA file. False if RNA
+
+class Motif:
+    def __init__(self, start, length, gene_position):
+        '''Take in the regex motif, the motif start on the gene, the length of the .'''
+
+        # Data
+        self.start = start
+        self.length = length
+        self.gene_position = gene_position
+
+    # Methods
+    def draw_motif(self):
+        #draw the motif based on the start and the length
+        context.rectangle(self.start, self.gene_position, self.length, 20)        #(x0, y0, length, height)
+        context.set_source_rgba(0,1,0, 0.5)
+        context.fill()
 
 
 with open(motifs_file, "r") as m_file: #write all motifs into a list
@@ -38,9 +54,9 @@ with open(motifs_file, "r") as m_file: #write all motifs into a list
         print(seq)
         regex_motif = bioinfo.motif_to_regex(seq, DNAflag = is_DNA_file)
 
-        motif_list.append(regex_motif.lower()) #add the regex motif to the motif list
+        motif_dict[regex_motif.lower()] = len(seq) #add the regex motif to the motif list
 
-print(motif_list)
+print(motif_dict)
 
 with open(fasta_file, "r") as f_file: #grab important info about each sequence ans store it in a dictionary
     for line in (f_file):
@@ -115,32 +131,26 @@ for header in gene_dict.keys():
     context.set_source_rgba(0,0,0, 1)
     context.fill()
 
+
+#---------------START HERE AFTER MAKING THE MOTIF TO REGEX CONVERSION FUNCTION IN BIOINFO-----------------------------
+    #find the motif in the sequence
+    for motif in motif_dict.keys():
+        motif_length = motif_dict[motif]
+        for i, char in enumerate(sequence):
+             check = sequence[i:i+motif_length]
+             if re.match(motif, check):
+                motif_obj = Motif(i+1, motif_length, y1)
+                motif_obj.draw_motif()
+                print("motif drawn")
+
+
     #move the y positions to the next exon
     y1 += 100
     text_start += 100
 
-
-#---------------START HERE AFTER MAKING THE MOTIF TO REGEX CONVERSION FUNCTION IN BIOINFO-----------------------------
-    #find the motif in the sequence
-    #for each motif in motif_list:
-        #re.findall to find all the matches of that position
-        #make the motif object
-        #draw the motif object
 
 
 
 
 surface.write_to_png(image_file_name)
 
-class Motif:
-    def __init__(self, the_name, the_sex, the_language):
-        '''This is how a human is made.'''
-
-        # Data
-        self.name = the_name
-        self.sex = the_sex
-        self.language = the_language
-
-    # Methods
-    def introduce(self):
-        print(f'My name is {self.name} and I speak {self.language}.')
