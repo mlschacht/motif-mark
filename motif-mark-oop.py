@@ -3,6 +3,7 @@
 import argparse
 import cairo
 import re
+import bioinfo
 
 #update with argparse when ready
 motifs_file:str = 'Fig_1_motifs.txt'
@@ -21,11 +22,21 @@ header:str = ""
 sequence:str = ""
 seq_length:int = 0
 
+is_DNA_file = bioinfo.validate_base_file(fasta_file) #True if fasta is a DNA file. False if RNA
+
 
 with open(motifs_file, "r") as m_file: #write all motifs into a list
     for line in (m_file):
-        line = line.strip()
-        motif_list.append(line)
+        seq = line.strip()
+        is_DNA_motif = "u" not in line.lower()
+        if is_DNA_file != is_DNA_motif:
+            seq = bioinfo.convert_DNA_RNA(seq, DNAflag=is_DNA_motif)
+        #--------------------------------motif to regex conversion-------------------------------------------
+        
+
+        motif_list.append(seq) #add the regex motif to the motif list
+
+print(motif_list)
 
 with open(fasta_file, "r") as f_file: #grab important info about each sequence ans store it in a dictionary
     for line in (f_file):
@@ -104,6 +115,13 @@ for header in gene_dict.keys():
     y1 += 100
     text_start += 100
 
+
+#---------------START HERE AFTER MAKING THE MOTIF TO REGEX CONVERSION FUNCTION IN BIOINFO-----------------------------
+    #find the motif in the sequence
+    #for each motif in motif_list:
+        #re.findall to find all the matches of that position
+        #make the motif object
+        #draw the motif object
 
 
 
