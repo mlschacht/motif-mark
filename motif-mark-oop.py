@@ -64,9 +64,49 @@ height:int = num_genes *100
 width:int = longest_gene + 20
 image_file_name:str = prefix + ".png"
 surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
+context = cairo.Context(surface)
 
+x_start:int = 50 #initialize the starting point for each gene
+y1:int = 40     #10 pixels above the line
+text_start:int = 20 #initialize the starting point for each header
 
 #go through the dictionary
+for header in gene_dict.keys():
+    #write out the header for each gene
+    context.set_font_size(12)
+    context.select_font_face("Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+    context.move_to(10, text_start) #header start
+    context.show_text(header)
+    context.stroke() #write out the header
+
+    sequence = gene_dict[header]
+    #draw the length of the gene
+    seq_length = len(sequence)
+    context.set_line_width(2)
+    context.move_to(10,x_start)
+    context.line_to(seq_length, x_start)
+    context.set_source_rgb(0,0,0)
+    context.stroke()
+    x_start += 100
+
+    #find the exon position and length
+    exon_find = re.search(r'[A-Z]+', sequence)
+    exon_start:int = exon_find.start() + 1 # add 1 because python uses index 0 so the start of the sequence would be 0 instead of 1
+    exon_length:int = len(exon_find.group())
+    exon_end = exon_start + exon_length
+
+    #draw the exon
+    context.rectangle(exon_start, y1, exon_length, 20)        #(x0, y0, length, height)
+    context.set_source_rgba(0,0,0, 1)
+    context.fill()
+
+    #move the y positions to the next exon
+    y1 += 100
+    text_start += 100
+
+
+
+
 
 surface.write_to_png(image_file_name)
 
