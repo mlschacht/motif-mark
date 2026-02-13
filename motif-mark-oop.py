@@ -28,13 +28,17 @@ is_DNA_file = bioinfo.validate_base_file(fasta_file) #True if fasta is a DNA fil
 with open(motifs_file, "r") as m_file: #write all motifs into a list
     for line in (m_file):
         seq = line.strip()
+
+        #convert the sequence to DNA or RNA to match what is seen in the sequencing file
         is_DNA_motif = "u" not in line.lower()
         if is_DNA_file != is_DNA_motif:
             seq = bioinfo.convert_DNA_RNA(seq, DNAflag=is_DNA_motif)
-        #--------------------------------motif to regex conversion-------------------------------------------
         
+        # motif to regex conversion
+        print(seq)
+        regex_motif = bioinfo.motif_to_regex(seq, DNAflag = is_DNA_file)
 
-        motif_list.append(seq) #add the regex motif to the motif list
+        motif_list.append(regex_motif.lower()) #add the regex motif to the motif list
 
 print(motif_list)
 

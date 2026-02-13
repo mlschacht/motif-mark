@@ -215,8 +215,23 @@ RNA_degenerate_base_dict:dict = {"W": "[AU]",
 
 
 
-def motif_to_regex(motif:str, DNAflag =False):
+def motif_to_regex(motif:str, DNAflag =True):
     """Takes in a string that represents a motif that needs converted into a regular expression for searching in a sequence. The motif can be upper case or lower case. The motif can be DNA or RNA. If the sequence is RNA, remember to set the flag to False."""
+    regex_motif = ""
+    if DNAflag == True: #for DNA sequences
+        for base in motif:
+            if base.upper() in DNA_degenerate_base_dict.keys():
+                regex_motif += DNA_degenerate_base_dict[base.upper()]
+            else:
+                regex_motif += base
+    else:               # for RNA sequences
+        for base in motif:
+            if base.upper() in RNA_degenerate_base_dict.keys():
+                regex_motif += RNA_degenerate_base_dict[base.upper()]
+            else:
+                regex_motif += base
+
+    return regex_motif
 
 
 
