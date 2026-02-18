@@ -24,20 +24,33 @@ seq_length:int = 0
 
 is_DNA_file = bioinfo.validate_base_file(fasta_file) #True if fasta is a DNA file. False if RNA
 
+#make color pallet
+color1:tuple = (1, 0, 0, 0.5) #red
+color2:tuple = (0, 0, 1, 0.5) #blue
+color3:tuple = (0, 1, 0, 0.5) #green
+color4:tuple = (0.616, 0,0, 0.5) #purple
+color5:tuple = (1, 0.616, 0, 0.5) #orange
+color6:tuple = (1, 0, 1, 0.5) #pink
+color7:tuple = (1, 1, 0, 0.5) #yellow
+color8:tuple = (0, 0.925, 1, 0.5) #light blue 
+color_pallet:list = [color1, color2, color3, color4, color5, color6, color7, color8]
+
+
 class Motif:
-    def __init__(self, start, length, gene_position):
+    def __init__(self, start, length, gene_position, color):
         '''Take in the regex motif, the motif start on the gene, the length of the .'''
 
         # Data
         self.start = start
         self.length = length
         self.gene_position = gene_position
+        self.color = color
 
     # Methods
     def draw_motif(self):
         #draw the motif based on the start and the length
         context.rectangle(self.start, self.gene_position, self.length, 20)        #(x0, y0, length, height)
-        context.set_source_rgba(0,1,0, 0.5)
+        context.set_source_rgba(*self.color) #unpack the tuple for each value here
         context.fill()
 
 
@@ -51,12 +64,10 @@ with open(motifs_file, "r") as m_file: #write all motifs into a list
             seq = bioinfo.convert_DNA_RNA(seq, DNAflag=is_DNA_motif)
         
         # motif to regex conversion
-        print(seq)
         regex_motif = bioinfo.motif_to_regex(seq, DNAflag = is_DNA_file)
 
         motif_dict[regex_motif.lower()] = len(seq) #add the regex motif to the motif list
 
-print(motif_dict)
 
 with open(fasta_file, "r") as f_file: #grab important info about each sequence ans store it in a dictionary
     for line in (f_file):
@@ -105,6 +116,7 @@ text_start:int = 20 #initialize the starting point for each header
 for header in gene_dict.keys():
     #write out the header for each gene
     context.set_font_size(12)
+    context.set_source_rgb(0,0,0)
     context.select_font_face("Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
     context.move_to(10, text_start) #header start
     context.show_text(header)
@@ -131,17 +143,15 @@ for header in gene_dict.keys():
     context.set_source_rgba(0,0,0, 1)
     context.fill()
 
-
-#---------------START HERE AFTER MAKING THE MOTIF TO REGEX CONVERSION FUNCTION IN BIOINFO-----------------------------
     #find the motif in the sequence
-    for motif in motif_dict.keys():
+    for i, motif in enumerate(motif_dict.keys()):
         motif_length = motif_dict[motif]
+        color = color_pallet[i]
         for i, char in enumerate(sequence):
              check = sequence[i:i+motif_length]
              if re.match(motif, check):
-                motif_obj = Motif(i+1, motif_length, y1)
+                motif_obj = Motif(i+1, motif_length, y1, color)
                 motif_obj.draw_motif()
-                print("motif drawn")
 
 
     #move the y positions to the next exon
