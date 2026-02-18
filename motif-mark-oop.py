@@ -117,6 +117,11 @@ image_file_name:str = prefix + ".png"
 surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
 context = cairo.Context(surface)
 
+#set the background to white
+context.rectangle(0,0,width,height)        #(x0, y0, length, height)
+context.set_source_rgba(1,1,1,1) #unpack the tuple for each value here
+context.fill()
+
 x_start:int = 50 #initialize the starting point for each gene
 y1:int = 40     #10 pixels above the line
 text_start:int = 20 #initialize the starting point for each header
