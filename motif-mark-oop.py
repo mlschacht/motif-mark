@@ -5,9 +5,21 @@ import cairo
 import re
 import bioinfo
 
-#update with argparse when ready
-motifs_file:str = 'Fig_1_motifs.txt'
-fasta_file:str = 'Figure_1.fasta'
+def get_args():
+    parser = argparse.ArgumentParser(description="This script takes a fasta file and a motif file to produce an image with all motifs annotated on each sequence.")
+    parser.add_argument("-f", "--fasta_file", help="input fasta file name", type = str, required = True)
+    parser.add_argument("-m", "--motif_file", help="input motif file name. Each motif must be unique and listed one per line in the file.", type = str, required = True)
+
+    return parser.parse_args()
+
+#variables that hold the fasta and motif file names
+args = get_args()
+fasta_file:str = args.fasta_file
+motifs_file:str = args.motif_file
+
+#comment out when argparse is ready
+# motifs_file:str = 'Fig_1_motifs.txt'
+# fasta_file:str = 'Figure_1.fasta'
 # motifs_file:str = 'Fig_1_motifs.txt'
 # fasta_file:str = 'test.fasta'
 
@@ -32,7 +44,7 @@ is_DNA_file = bioinfo.validate_base_file(fasta_file) #True if fasta is a DNA fil
 color1:tuple = (1, 0, 0) #red
 color2:tuple = (0, 0, 1) #blue
 color3:tuple = (0, 1, 0) #green
-color4:tuple = (0.616, 0,0) #purple
+color4:tuple = (0.616, 0,1) #purple
 color5:tuple = (1, 0.616, 0) #orange
 color6:tuple = (1, 0, 1) #pink
 color7:tuple = (1, 1, 0) #yellow
