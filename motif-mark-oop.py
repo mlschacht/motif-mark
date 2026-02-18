@@ -8,6 +8,7 @@ import bioinfo
 #update with argparse when ready
 motifs_file:str = 'Fig_1_motifs.txt'
 fasta_file:str = 'Figure_1.fasta'
+#fasta_file:str = 'test.fasta'
 prefix:str = fasta_file.split(".")[0] #save the prefix of the input fasta file to use as the output png file name
 
 
@@ -49,7 +50,7 @@ class Motif:
     # Methods
     def draw_motif(self):
         #draw the motif based on the start and the length
-        context.rectangle(self.start, self.gene_position, self.length, 20)        #(x0, y0, length, height)
+        context.rectangle(self.start+10, self.gene_position, self.length, 20)        #(x0, y0, length, height)
         context.set_source_rgba(*self.color) #unpack the tuple for each value here
         context.fill()
 
@@ -127,20 +128,20 @@ for header in gene_dict.keys():
     seq_length = len(sequence)
     context.set_line_width(2)
     context.move_to(10,x_start)
-    context.line_to(seq_length, x_start)
+    context.line_to(seq_length+10, x_start)
     context.set_source_rgb(0,0,0)
     context.stroke()
     x_start += 100
 
     #find the exon position and length
     exon_find = re.search(r'[A-Z]+', sequence)
-    exon_start:int = exon_find.start() + 1 # add 1 because python uses index 0 so the start of the sequence would be 0 instead of 1
+    exon_start:int = exon_find.start() 
     exon_length:int = len(exon_find.group())
     exon_end = exon_start + exon_length
 
     #draw the exon
-    context.rectangle(exon_start, y1, exon_length, 20)        #(x0, y0, length, height)
-    context.set_source_rgba(0,0,0, 1)
+    context.rectangle(exon_start+10, y1, exon_length, 20)        #(x0, y0, length, height)
+    context.set_source_rgba(0.651, 0.651, 0.651, 1)
     context.fill()
 
     #find the motif in the sequence
@@ -148,9 +149,9 @@ for header in gene_dict.keys():
         motif_length = motif_dict[motif]
         color = color_pallet[i]
         for i, char in enumerate(sequence):
-             check = sequence[i:i+motif_length]
+             check = sequence[i:i+motif_length].lower()
              if re.match(motif, check):
-                motif_obj = Motif(i+1, motif_length, y1, color)
+                motif_obj = Motif(i, motif_length, y1, color)
                 motif_obj.draw_motif()
 
 
