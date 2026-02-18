@@ -8,12 +8,15 @@ import bioinfo
 #update with argparse when ready
 motifs_file:str = 'Fig_1_motifs.txt'
 fasta_file:str = 'Figure_1.fasta'
+# motifs_file:str = 'Fig_1_motifs.txt'
+# fasta_file:str = 'test.fasta'
 
 prefix:str = fasta_file.split(".")[0] #save the prefix of the input fasta file to use as the output png file name
 
 
 #initialize variables
 motif_dict:dict = {} #keys are regex motifs and values are the original sequence lengths
+motif_list:list = []
 longest_gene:int = 0
 num_genes:int = 0
 
@@ -26,14 +29,14 @@ seq_length:int = 0
 is_DNA_file = bioinfo.validate_base_file(fasta_file) #True if fasta is a DNA file. False if RNA
 
 #make color pallet
-color1:tuple = (1, 0, 0, 0.5) #red
-color2:tuple = (0, 0, 1, 0.5) #blue
-color3:tuple = (0, 1, 0, 0.5) #green
-color4:tuple = (0.616, 0,0, 0.5) #purple
-color5:tuple = (1, 0.616, 0, 0.5) #orange
-color6:tuple = (1, 0, 1, 0.5) #pink
-color7:tuple = (1, 1, 0, 0.5) #yellow
-color8:tuple = (0, 0.925, 1, 0.5) #light blue 
+color1:tuple = (1, 0, 0) #red
+color2:tuple = (0, 0, 1) #blue
+color3:tuple = (0, 1, 0) #green
+color4:tuple = (0.616, 0,0) #purple
+color5:tuple = (1, 0.616, 0) #orange
+color6:tuple = (1, 0, 1) #pink
+color7:tuple = (1, 1, 0) #yellow
+color8:tuple = (0, 0.925, 1) #light blue 
 color_pallet:list = [color1, color2, color3, color4, color5, color6, color7, color8]
 
 
@@ -51,11 +54,11 @@ class Motif:
     def draw_motif(self):
         #draw the motif based on the start and the length
         context.rectangle(self.start+10, self.gene_position, self.length, 20)        #(x0, y0, length, height)
-        context.set_source_rgba(*self.color) #unpack the tuple for each value here
+        context.set_source_rgba(*self.color, 0.5) #unpack the tuple for each value here
         context.fill()
 
 
-with open(motifs_file, "r") as m_file: #write all motifs into a list
+with open(motifs_file, "r") as m_file: #write all motifs into a list and dictionary
     for line in (m_file):
         seq = line.strip()
 
@@ -68,6 +71,8 @@ with open(motifs_file, "r") as m_file: #write all motifs into a list
         regex_motif = bioinfo.motif_to_regex(seq, DNAflag = is_DNA_file)
 
         motif_dict[regex_motif.lower()] = len(seq) #add the regex motif to the motif list
+        motif_list.append(seq)
+
 
 with open(fasta_file, "r") as f_file: #grab important info about each sequence ans store it in a dictionary
     for line in (f_file):
@@ -103,7 +108,7 @@ with open(fasta_file, "r") as f_file: #grab important info about each sequence a
 
 # draw the image canvas based on the number of genes and the longest gene length
 height:int = num_genes *100
-width:int = longest_gene + 20
+width:int = longest_gene + 170
 image_file_name:str = prefix + ".png"
 surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
 context = cairo.Context(surface)
@@ -157,6 +162,38 @@ for header in gene_dict.keys():
     #move the y positions to the next exon
     y1 += 100
     text_start += 100
+
+#make a key
+#pick a start for the motif key color boxes and text
+key_box_start_x = longest_gene +20
+key_box_start_y = 20
+write_motif_x = longest_gene + 50
+write_motif_y = 33
+
+    #for each motif in the LIST
+for i, motif in enumerate(motif_list):
+    
+    #draw a rectangle of the color
+    context.rectangle(key_box_start_x, key_box_start_y, 20, 20)        #(x0, y0, length, height)
+    context.set_source_rgba(*color_pallet[i], 1) #unpack the tuple for each value here
+    context.fill()
+
+    #write the ORIGINAL motif sequence next to it
+    context.set_font_size(14)
+    context.set_source_rgb(0,0,0)
+    context.select_font_face("Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+    context.move_to(write_motif_x, write_motif_y) #motif text start
+    context.show_text(motif_list[i])
+    context.stroke() #write out the motif
+
+    #increment the start poeint for the next sequence
+    key_box_start_y += 25
+    write_motif_y += 25 
+            
+
+    #set up argparse
+    #check for camel case
+
 
 surface.write_to_png(image_file_name)
 
