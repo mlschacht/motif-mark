@@ -17,23 +17,16 @@ args = get_args()
 fasta_file:str = args.fasta_file
 motifs_file:str = args.motif_file
 
-#comment out when argparse is ready
-# motifs_file:str = 'Fig_1_motifs.txt'
-# fasta_file:str = 'Figure_1.fasta'
-# motifs_file:str = 'Fig_1_motifs.txt'
-# fasta_file:str = 'test.fasta'
-
 prefix:str = fasta_file.split(".")[0] #save the prefix of the input fasta file to use as the output png file name
-
 
 #initialize variables
 motif_dict:dict = {} #keys are regex motifs and values are the original sequence lengths
-motif_list:list = []
+motif_list:list = [] #list for printing the key of motifs
 longest_gene:int = 0
 num_genes:int = 0
 
 
-gene_dict:dict = {}
+gene_dict:dict = {} #will hold headers as keys and sequences as the values
 header:str = ""
 sequence:str = ""
 seq_length:int = 0
@@ -51,12 +44,11 @@ color7:tuple = (1, 1, 0) #yellow
 color8:tuple = (0, 0.925, 1) #light blue 
 color_pallet:list = [color1, color2, color3, color4, color5, color6, color7, color8]
 
-
 class Motif:
     def __init__(self, start, length, gene_position, color):
         '''Take in the regex motif, the motif start on the gene, the length of the .'''
 
-        # Data
+        # attributes of a motif needed to draw a motif
         self.start = start
         self.length = length
         self.gene_position = gene_position
@@ -201,11 +193,7 @@ for i, motif in enumerate(motif_list):
     #increment the start poeint for the next sequence
     key_box_start_y += 25
     write_motif_y += 25 
-            
 
-    #set up argparse
-    #check for camel case
-
-
+#write out the final image as a png
 surface.write_to_png(image_file_name)
 
