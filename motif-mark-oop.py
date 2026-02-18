@@ -8,7 +8,7 @@ import bioinfo
 #update with argparse when ready
 motifs_file:str = 'Fig_1_motifs.txt'
 fasta_file:str = 'Figure_1.fasta'
-#fasta_file:str = 'test.fasta'
+
 prefix:str = fasta_file.split(".")[0] #save the prefix of the input fasta file to use as the output png file name
 
 
@@ -68,7 +68,6 @@ with open(motifs_file, "r") as m_file: #write all motifs into a list
         regex_motif = bioinfo.motif_to_regex(seq, DNAflag = is_DNA_file)
 
         motif_dict[regex_motif.lower()] = len(seq) #add the regex motif to the motif list
-
 
 with open(fasta_file, "r") as f_file: #grab important info about each sequence ans store it in a dictionary
     for line in (f_file):
@@ -158,10 +157,6 @@ for header in gene_dict.keys():
     #move the y positions to the next exon
     y1 += 100
     text_start += 100
-
-
-
-
 
 surface.write_to_png(image_file_name)
 
